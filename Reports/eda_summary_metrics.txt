@@ -1,0 +1,13 @@
+=======================================================
+                EDA KEY FINDINGS SUMMARY
+=======================================================
+Total Combined URLs       : 40,000
+  🔹 Phishing Records     : 20,000 (50.0%)
+  🔹 Legitimate Records   : 20,000 (50.0%)
+-------------------------------------------------------
+Avg URL Length (Phishing)   : 49.4 characters
+Avg URL Length (Legitimate) : 21.8 characters
+-------------------------------------------------------
+HTTPS Usage (Phishing)      : 88.7%
+HTTPS Usage (Legitimate)    : 100.0%
+=======================================================

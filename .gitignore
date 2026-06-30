@@ -216,3 +216,14 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+# Ignore raw data files and downloads
+dataset/raw/*.csv
+dataset/raw/*.arff
+
+# Ignore large intermediate engineered datasets
+dataset/processed/*.csv
+dataset/exports/*.csv
+
+# Ignore local python virtual environment directories
+venv/
+.venv/
