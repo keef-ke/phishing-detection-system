@@ -26,14 +26,17 @@ def _domain(url):
     try:
         host = urlparse(url).netloc.split(':')[0].lower()
         return host[4:] if host.startswith('www.') else host
-    except Exception: 
+    except Exception:
         return None
 
 
 def _days(date_obj):
-    if isinstance(date_obj, list): date_obj = date_obj[0]
-    if date_obj is None: return -1
-    if isinstance(date_obj, datetime.datetime): date_obj = date_obj.date()
+    if isinstance(date_obj, list):
+        date_obj = date_obj[0]
+    if date_obj is None:
+        return -1
+    if isinstance(date_obj, datetime.datetime):
+        date_obj = date_obj.date()
     return (datetime.date.today() - date_obj).days
 
 
@@ -45,36 +48,55 @@ def _get_whois(domain):
         return None
     try:
         return whois.whois(domain)
-    except Exception:
+    except Exception as e:
+        # TEMP DEBUG — remove once WHOIS reliability is confirmed
+        print(f"WHOIS FAILED for {domain}: {e}")
         return None
 
 
 def get_domain_age_days(w):
-    if w is None: return -1
+    if w is None:
+        return -1
     return _days(w.creation_date)
 
 
 def get_domain_expiry_days(w):
-    if w is None: return -1
+    """Days until the domain's registration expires."""
+    if w is None:
+        return -1
     try:
-        exp = w.expiration_date
-        if isinstance(exp, list): exp = exp[0]
-        if exp is None: return -1
-        if isinstance(exp, datetime.datetime): exp = exp.date()
-        return (exp - datetime.date.today()).days
-    except Exception:
+        expiry_date = w.expiration_date
+        if isinstance(expiry_date, list) and len(expiry_date) > 0:
+            expiry_date = expiry_date[0]
+
+        if expiry_date is None:
+            return -1
+
+        if isinstance(expiry_date, datetime.datetime):
+            expiry_date = expiry_date.date()
+
+        return (expiry_date - datetime.date.today()).days
+
+    except Exception as e:
+        print(f"DEBUG: Domain expiry extraction failed. Error: {e}")
         return -1
 
 
 def get_registration_length_days(w):
-    if w is None: return -1
+    if w is None:
+        return -1
     try:
         c, e = w.creation_date, w.expiration_date
-        if isinstance(c, list): c = c[0]
-        if isinstance(e, list): e = e[0]
-        if not c or not e: return -1
-        if isinstance(c, datetime.datetime): c = c.date()
-        if isinstance(e, datetime.datetime): e = e.date()
+        if isinstance(c, list):
+            c = c[0]
+        if isinstance(e, list):
+            e = e[0]
+        if not c or not e:
+            return -1
+        if isinstance(c, datetime.datetime):
+            c = c.date()
+        if isinstance(e, datetime.datetime):
+            e = e.date()
         return (e - c).days
     except Exception:
         return -1
@@ -84,53 +106,74 @@ def get_registration_length_days(w):
 
 def has_dns_a_record(url):
     d = _domain(url)
-    if not d: return -1
+    if not d:
+        return -1
     if dns:
-        try: dns.resolver.resolve(d, 'A'); return 1
-        except: return 0
+        try:
+            dns.resolver.resolve(d, 'A')
+            return 1
+        except Exception:
+            return 0
     else:
-        try: socket.gethostbyname(d); return 1
-        except: return 0
+        try:
+            socket.gethostbyname(d)
+            return 1
+        except Exception:
+            return 0
 
 
 def has_dns_mx_record(url):
-    if dns is None: return -1
+    if dns is None:
+        return -1
     d = _domain(url)
-    if not d: return -1
-    try: dns.resolver.resolve(d, 'MX'); return 1
-    except: return 0
+    if not d:
+        return -1
+    try:
+        dns.resolver.resolve(d, 'MX')
+        return 1
+    except Exception:
+        return 0
 
 
 def count_dns_nameservers(url):
-    if dns is None: return -1
+    if dns is None:
+        return -1
     d = _domain(url)
-    if not d: return -1
-    try: return len(list(dns.resolver.resolve(d, 'NS')))
-    except: return -1
+    if not d:
+        return -1
+    try:
+        return len(list(dns.resolver.resolve(d, 'NS')))
+    except Exception:
+        return -1
 
 
 def get_dns_ttl(url):
-    if dns is None: return -1
+    if dns is None:
+        return -1
     d = _domain(url)
-    if not d: return -1
+    if not d:
+        return -1
     try:
         ans = dns.resolver.resolve(d, 'A')
         return ans.rrset.ttl if ans.rrset else -1
-    except: return -1
+    except Exception:
+        return -1
 
 
 def get_ssl_expiry_days(url):
     d = _domain(url)
-    if not d: return -1
+    if not d:
+        return -1
     try:
         ctx = ssl.create_default_context()
         with socket.create_connection((d, 443), timeout=5) as s:
             with ctx.wrap_socket(s, server_hostname=d) as ssock:
                 cert = ssock.getpeercert()
-        not_after = cert.get('notAfter','')
+        not_after = cert.get('notAfter', '')
         exp = datetime.datetime.strptime(not_after, '%b %d %H:%M:%S %Y %Z').date()
         return (exp - datetime.date.today()).days
-    except: return -1
+    except Exception:
+        return -1
 
 
 def has_valid_ssl(url):
@@ -142,7 +185,7 @@ def has_valid_ssl(url):
 def extract_domain_features(url):
     domain = _domain(url)
     w = _get_whois(domain)  # Performs ONE network query rather than three
-    
+
     return {
         'domain_age_days':          get_domain_age_days(w),
         'domain_expiry_days':       get_domain_expiry_days(w),
@@ -157,7 +200,7 @@ def extract_domain_features(url):
 
 
 if __name__ == '__main__':
-    url = 'https://www.github.com'
+    url = 'https://www.wikipedia.org'
     print(f"Domain features for: {url}")
     for k, v in extract_domain_features(url).items():
         print(f"  {k:<30}: {v}")

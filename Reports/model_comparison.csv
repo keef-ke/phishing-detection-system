@@ -1,0 +1,7 @@
+Model,split,accuracy,precision,recall,f1,auc_roc,train_time_s
+LightGBM,val,98.97,99.1,98.83,98.97,0.9989,3.8
+Random Forest,val,98.92,99.2,98.63,98.91,0.9988,1.0
+XGBoost,val,98.9,99.1,98.7,98.9,0.9991,0.6
+Decision Tree,val,98.35,98.53,98.17,98.35,0.9885,0.2
+SVM,val,97.47,98.87,96.03,97.43,0.9964,33.0
+Logistic Regression,val,96.92,97.12,96.7,96.91,0.9948,0.1
