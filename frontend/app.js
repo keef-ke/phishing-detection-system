@@ -275,7 +275,10 @@ async function loadStats() {
 document.addEventListener('DOMContentLoaded', () => {
   // Bind Nav Tabs dynamically using dataset properties
   document.querySelectorAll('.nav-btn[data-page]').forEach(btn => {
-    btn.addEventListener('click', () => showPage(btn.dataset.page));
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      showPage(btn.dataset.page);
+    });
   });
 
   // Matches id="brandLink" from index.html safely
@@ -290,20 +293,27 @@ document.addEventListener('DOMContentLoaded', () => {
   // Bind primary scan action button
   const scanBtn = document.getElementById('scanBtn');
   if (scanBtn) {
-    scanBtn.addEventListener('click', scanUrl);
+    scanBtn.addEventListener('click',(e) => {
+      e.preventDefault();
+      scanUrl(e);
+    });
   }
 
   // Bind keydown events inside the input register
   const urlInput = document.getElementById('urlInput');
   if (urlInput) {
     urlInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') scanUrl();
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        scanUrl();
+      }
     });
   }
 
   // Bind example target footprint links cleanly using dataset properties
   document.querySelectorAll('.badge-link[data-url]').forEach(btn => {
-    btn.addEventListener('click', () => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
       if (urlInput) {
         urlInput.value = btn.dataset.url;
       }

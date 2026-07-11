@@ -46,13 +46,12 @@
         <div class="input-group mb-3">
           <input type="text" id="urlInput" class="form-control url-input"
                  placeholder="Paste endpoint address here (e.g., https://...)">
-          <button class="btn btn-scan text-white" id="scanBtn">EXECUTE SCAN</button>
+                 <!--Added type="button" here to completely kill the reload behavior -->
+          <button type="button" class="btn btn-scan text-white" id="scanBtn">EXECUTE SCAN</button>
         </div>
         <div class="d-flex gap-2 flex-wrap align-items-center">
           <span class="text-muted small">Target Examples:</span>
           <button class="badge-link text-white" data-url="https://www.github.com">github.com</button>
-          <button class="badge-link text-danger-neon" data-url="http://paypal-secure-verify.xyz/login?user=1">unverified footprint</button>
-        </div>
       </div>
 
       <div id="loadingSection" class="my-4" style="display: none;">
@@ -111,7 +110,7 @@
           <div class="table-responsive">
             <table class="table table-custom mb-0">
               <thead>
-                <tr><th>Telemetry Dimension</th><th>Register Value</th><th>Pipeline Operational Definition</th></tr>
+                <tr><th>Register Value</th><th>Pipeline Operational Definition</th></tr>
               </thead>
               <tbody id="featureTableBody"></tbody>
             </table>
